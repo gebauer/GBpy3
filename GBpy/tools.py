@@ -2,13 +2,16 @@
 # Copyright (c) 2015,  Arash Dehghan Banadaki and Srikanth Patala.
 # License: GNU-GPL Style.
 # How to cite GBpy:
-# Banadaki, A. D. & Patala, S. "An efficient algorithm for computing the primitive bases of a general lattice plane",
+# Banadaki, A. D. & Patala, S. "An efficient algorithm for computing the primitive bases of a
+#                               general lattice plane",
 # Journal of Applied Crystallography 48, 585-588 (2015). doi:10.1107/S1600576715004446
 
 
 import numpy as np
-import os, sys, inspect
-import integer_manipulations as int_man
+import os
+import sys
+import inspect
+from . import integer_manipulations as int_man
 # -----------------------------------------------------------------------------------------------------------
 
 
@@ -60,7 +63,7 @@ class Col(object):
             a = self.amber
         else:
             raise Exception('The color you selected is not acceptable')
-        print a + text + self.ENDC
+        print(a + text + self.ENDC)
 # -----------------------------------------------------------------------------------------------------------
 
 
@@ -103,7 +106,7 @@ def lll_reduction(matrix, delta=0.75):
 
         b[:, 0] = a[:, 0]
         m[0] = np.dot(b[:, 0], b[:, 0])
-        for i in xrange(1, sz[1]):
+        for i in range(1, sz[1]):
             u[i, 0:i] = np.dot(a[:, i].T, b[:, 0:i]) / m[0:i]
             b[:, i] = a[:, i] - np.dot(b[:, 0:i], u[i, 0:i].T)
             m[i] = np.dot(b[:, i], b[:, i])
@@ -112,7 +115,7 @@ def lll_reduction(matrix, delta=0.75):
 
         while k <= sz[1]:
             # Size reduction.
-            for i in xrange(k - 1, 0, -1):
+            for i in range(k - 1, 0, -1):
                 q = round(u[k - 1, i - 1])
                 if q != 0:
                     # Reduce the k-th basis vector.
@@ -135,11 +138,11 @@ def lll_reduction(matrix, delta=0.75):
                 a[:, k - 1] = a[:, k - 2].copy()
                 a[:, k - 2] = v
                 # Update the Gram-Schmidt coefficients
-                for s in xrange(k - 1, k + 1):
+                for s in range(k - 1, k + 1):
                     u[s - 1, 0:(s - 1)] = np.dot(a[:, s - 1].T,
-                                            b[:, 0:(s - 1)]) / m[0:(s - 1)]
+                                                 b[:, 0:(s - 1)]) / m[0:(s - 1)]
                     b[:, s - 1] = a[:, s - 1] - np.dot(b[:, 0:(s - 1)],
-                                                    u[s - 1, 0:(s - 1)].T)
+                                                       u[s - 1, 0:(s - 1)].T)
                     m[s - 1] = np.dot(b[:, s - 1], b[:, s - 1])
 
                 if k > (sz[1]-1):
@@ -213,7 +216,7 @@ def message_display(CheckMatrix, Checknumber, Message, Precis):
     in case the matrix passed to it is not integral.`
     """
     cond = int_man.int_check(CheckMatrix, Precis)
-    print Checknumber, '.', Message, '-> ',
+    print(Checknumber, '.', Message, '-> ', end=' ')
     txt = Col()
     if cond.all():
         txt.c_prnt('YES', 'yel')
@@ -317,7 +320,7 @@ def smith_nf(matrix):
         det(V) =+-1
     """
 
-    A=np.copy(matrix)
+    A = np.copy(matrix)
     if (np.around(A) != A).any():
         raise Exception('This function requires integer input.')
 
@@ -342,7 +345,8 @@ def smith_nf(matrix):
                 # Apply the transform to S and U.
                 S[[j, i], :] = np.dot(E, S[[j, i], :])
                 # U[:, [j, i]] = U[:, [j, i]] / E
-                U[:, [j, i]] = left_matrix_division(U[:, [j, i]], E) # solving the left matrix division
+                # solving the left matrix division
+                U[:, [j, i]] = left_matrix_division(U[:, [j, i]], E)
 
         # % Zero row j after the superdiagonal.
         for i in range(j+2, n):
@@ -353,7 +357,8 @@ def smith_nf(matrix):
                 # Apply the transform to S and V.
                 S[:, [j+1, i]] = np.dot(S[:, [j+1, i]], E.T)
                 # V[:, [j+1, i]] = V[:, [j+1, i]] / E
-                V[:, [j+1, i]] = left_matrix_division(V[:, [j+1, i]], E) # solving the left matrix division
+                # solving the left matrix division
+                V[:, [j+1, i]] = left_matrix_division(V[:, [j+1, i]], E)
 
     # Now S is upper bidiagonal.
     # Chase the superdiagonal nonzeros away.
@@ -372,7 +377,8 @@ def smith_nf(matrix):
         E = np.array([[1, 0], [-q, 1]])
         S[:, [b, b+1]] = np.dot(S[:, [b, b+1]], E.T)
         # V[:, [b, b+1]] = V[:, [b, b+1]] / E
-        V[:, [b, b+1]] = left_matrix_division(V[:, [b, b+1]], E) # solving the left matrix division
+        # solving the left matrix division
+        V[:, [b, b+1]] = left_matrix_division(V[:, [b, b+1]], E)
 
         if S[b, b+1]:
             # Zero the first nonzero superdiagonal element
@@ -450,11 +456,10 @@ def vrrotvec2mat(ax_ang):
     --------
     mat2quat, axang2quat, vrrotmat2vec
     """
-    
-    #file_dir = os.path.dirname(os.path.realpath(__file__))
-    #path_dir2 = file_dir + '/../geometry/'
-    #sys.path.append(path_dir2)
-    
+    # file_dir = os.path.dirname(os.path.realpath(__file__))
+    # path_dir2 = file_dir + '/../geometry/'
+    # sys.path.append(path_dir2)
+
     if ax_ang.ndim == 1:
         if np.size(ax_ang) == 5:
             ax_ang = np.reshape(ax_ang, (5, 1))
@@ -571,16 +576,12 @@ def vrrotmat2vec(mat1, rot_type='proper'):
     else:
         raise Exception('Wrong Input parameter for rot_type')
 
-
-
     mtrc = mat[:, 0, 0] + mat[:, 1, 1] + mat[:, 2, 2]
-
 
     ind1 = np.where(abs(mtrc - 3) <= epsilon)[0]
     ind1_sz = np.size(ind1)
     if np.size(ind1) > 0:
         ax_ang[:4, ind1] = np.tile(np.array([0, 1, 0, 0]), (ind1_sz, 1)).transpose()
-
 
     ind2 = np.where(abs(mtrc + 1) <= epsilon)[0]
     ind2_sz = np.size(ind2)
@@ -627,7 +628,8 @@ def vrrotmat2vec(mat1, rot_type='proper'):
         tind1 = np.where(sum_signs >= 0)[0]
         t1[tind1] = np.ones(np.shape(tind1))
 
-        tind2 = np.where(np.all(np.vstack(((np.any(signs == 0, axis=1) == False), t1 == 0)), axis=0))[0]
+        tind2 = np.where(np.all(np.vstack(((np.any(signs == 0, axis=1) is False), t1 == 0)),
+                         axis=0))[0]
         t1[tind2] = 2*np.ones(np.shape(tind2))
 
         tind3 = np.where(t1 == 0)[0]
@@ -643,7 +645,8 @@ def vrrotmat2vec(mat1, rot_type='proper'):
         axis = axis*flip
         ax_ang[:4, ind2] = np.vstack((axis.transpose(), np.pi*(np.ones((1, ind2_sz)))))
 
-    ind3 = np.where(np.all(np.vstack((abs(mtrc + 1) > epsilon, abs(mtrc - 3) > epsilon)), axis=0))[0]
+    ind3 = np.where(np.all(np.vstack((abs(mtrc + 1) > epsilon, abs(mtrc - 3) > epsilon)),
+                    axis=0))[0]
     ind3_sz = np.size(ind3)
     if ind3_sz > 0:
         phi = np.arccos((mtrc[ind3]-1)/2)
@@ -676,7 +679,7 @@ def quat2mat(q):
     --------
     mat2quat, axang2quat
     """
-    import quaternion as quat
+    from . import quaternion as quat
     sz = quat.get_size(q)
     q0 = quat.getq0(q)
     q1 = quat.getq1(q)
@@ -730,7 +733,7 @@ def mat2quat(mat, rot_type='proper'):
     --------
     quat2mat, axang2quat
     """
-    import quaternion as quat
+    from . import quaternion as quat
     ax_ang = vrrotmat2vec(mat, rot_type)
     q0 = np.cos(ax_ang[3, :]/2)
     q1 = ax_ang[0, :]*np.sin(ax_ang[3, :]/2)
@@ -754,7 +757,7 @@ def axang2quat(ax_ang):
     ----------
     quaternion_rep: numpy array (5 x 1)
     """
-    import quaternion as quat
+    from . import quaternion as quat
 
     if ax_ang.ndim == 1:
         if np.size(ax_ang) == 5:
@@ -767,6 +770,7 @@ def axang2quat(ax_ang):
             msz = np.shape(ax_ang)[1]
         elif np.shape(ax_ang)[1] == 5:
             ax_ang = ax_ang.transpose()
+            # TODO Do we need the msz variable here? Its never used...
             msz = np.shape(ax_ang)[1]
         else:
             raise Exception('Wrong Input Type')
@@ -875,9 +879,9 @@ def unique_rows_tol(data, tol=1e-12, return_index=False, return_inverse=False):
     """
     prec = -np.fix(np.log10(tol))
     d_r = np.fix(data * 10 ** prec) / 10 ** prec + 0.0
-    ### fix rounds off towards zero; issues with the case of 0.9999999998 and 1.0
+    # fix rounds off towards zero; issues with the case of 0.9999999998 and 1.0
 
-    ### rint solves the issue, needs extensive testing
+    # rint solves the issue, needs extensive testing
     # prec = -np.rint(np.log10(tol))
     # d_r = np.rint(data * 10 ** prec) / 10 ** prec + 0.0
 
@@ -912,7 +916,7 @@ def test_unique_rows():
     prec = 1.e-5
     mat = np.array([[-1e-6, 1, 1], [1e-7, 1, 1], [0, 1, 1], [1, 1, 1]])
     c, ia, ic = unique_rows_tol(mat, prec, True, True)
-    print unique_rows_tol(mat, prec, True, True)
+    print(unique_rows_tol(mat, prec, True, True))
 # -----------------------------------------------------------------------------------------------------------
 
 
@@ -933,6 +937,6 @@ def test_lll_reduction():
             # a, H = lll_reduction_3by2(Mat['Matrix'][i])
             b = lll_reduction(Mat[j][i])
             # print Mat['Matrix'][i], '\n reduced: \n', H, '\n-------\n'
-            print '\n______________________________________________\n'
-            print Mat[j][i], '\n reduced: \n', b, '\n-------\n'
+            print('\n______________________________________________\n')
+            print(Mat[j][i], '\n reduced: \n', b, '\n-------\n')
 # -----------------------------------------------------------------------------------------------------------

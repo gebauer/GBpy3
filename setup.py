@@ -11,7 +11,7 @@ import GBpy
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-setup(name='GBpy',
+setup(name='GBpy3',
     version='0.1.2',
     author='Arash Dehghan Banadaki, Srikanth Patala',
     author_email='adehgha@ncsu.edu, spatala@ncsu.edu',
